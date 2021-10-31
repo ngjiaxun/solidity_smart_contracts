@@ -1,38 +1,25 @@
 // SPDX-License-Identifier: GPL-3.0
 
-// Amended by HashLips
-/**
-    !Disclaimer!
-    These contracts have been used to create tutorials,
-    and was created for the purpose to teach people
-    how to create smart contracts on the blockchain.
-    please review this code on your own before using any of
-    the following code for production.
-    HashLips will not be liable in any way if for the use 
-    of the code. That being said, the code has been tested 
-    to the best of the developers' knowledge to work as intended.
-*/
-
 pragma solidity >=0.7.0 <0.9.0;
 
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
-contract NFT is ERC721Enumerable, Ownable {
+contract ZestfulZodiac is ERC721Enumerable, Ownable {
   using Strings for uint256;
 
   string public baseURI;
   string public baseExtension = ".json";
   string public notRevealedUri;
-  uint256 public cost = 1 ether;
+  uint256 public cost = 2 ether;
   uint256 public maxSupply = 10000;
-  uint256 public maxMintAmount = 20;
-  uint256 public nftPerAddressLimit = 3;
-  bool public paused = false;
+  uint256 public maxMintAmount = 10000; // How many NFTs can be minted at once
+  uint256 public nftPerAddressLimit = 10000; // Only for presale
+  bool public paused = true;
   bool public revealed = false;
   bool public onlyWhitelisted = true;
   address[] public whitelistedAddresses;
-  mapping(address => uint256) public addressMintedBalance;
+  mapping(address => uint256) public addressMintedBalance; // Only for presale
 
   constructor(
     string memory _name,
@@ -57,7 +44,10 @@ contract NFT is ERC721Enumerable, Ownable {
     require(_mintAmount <= maxMintAmount, "max mint amount per session exceeded");
     require(supply + _mintAmount <= maxSupply, "max NFT limit exceeded");
 
+    // Owner can mint for free
     if (msg.sender != owner()) {
+        
+        // During presale, the number of NFTs each address can mint is limited
         if(onlyWhitelisted == true) {
             require(isWhitelisted(msg.sender), "user is not whitelisted");
             uint256 ownerMintedCount = addressMintedBalance[msg.sender];
