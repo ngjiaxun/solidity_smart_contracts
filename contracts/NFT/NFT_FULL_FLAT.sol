@@ -1,17 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0
 
-// Amended by HashLips
-/**
-    !Disclaimer!
-    These contracts have been used to create tutorials,
-    and was created for the purpose to teach people
-    how to create smart contracts on the blockchain.
-    please review this code on your own before using any of
-    the following code for production.
-    HashLips will not be liable in any way if for the use 
-    of the code. That being said, the code has been tested 
-    to the best of the developers' knowledge to work as intended.
-*/
+// Amended by HashLips and Jax Ng
 
 // File: @openzeppelin/contracts/utils/introspection/IERC165.sol
 pragma solidity ^0.8.0;
@@ -1230,6 +1219,16 @@ abstract contract Ownable is Context {
     }
 }
 
+
+
+/**
+
+=========================== START HERE ===========================
+
+ */
+
+
+
 // SPDX-License-Identifier: GPL-3.0
 
 pragma solidity >=0.7.0 <0.9.0;
@@ -1240,15 +1239,15 @@ contract NFT is ERC721Enumerable, Ownable {
   string public baseURI;
   string public baseExtension = ".json";
   string public notRevealedUri;
-  uint256 public cost = 1 ether;
+  uint256 public cost = 2 ether; // Remember to set price
   uint256 public maxSupply = 10000;
-  uint256 public maxMintAmount = 20;
-  uint256 public nftPerAddressLimit = 3;
-  bool public paused = false;
+  uint256 public maxMintAmount = 10000; // How many NFTs can the user mint at a time
+  uint256 public nftPerAddressLimit = 10000; // How many NFTs can each address mint during presale
+  bool public paused = true; // Remember to pause
   bool public revealed = false;
   bool public onlyWhitelisted = true;
   address[] public whitelistedAddresses;
-  mapping(address => uint256) public addressMintedBalance;
+  mapping(address => uint256) public addressMintedBalance; // For presale only
 
   constructor(
     string memory _name,
@@ -1273,7 +1272,10 @@ contract NFT is ERC721Enumerable, Ownable {
     require(_mintAmount <= maxMintAmount, "max mint amount per session exceeded");
     require(supply + _mintAmount <= maxSupply, "max NFT limit exceeded");
 
+    // Owner gets to mint for free
     if (msg.sender != owner()) {
+
+        // 
         if(onlyWhitelisted == true) {
             require(isWhitelisted(msg.sender), "user is not whitelisted");
             uint256 ownerMintedCount = addressMintedBalance[msg.sender];
