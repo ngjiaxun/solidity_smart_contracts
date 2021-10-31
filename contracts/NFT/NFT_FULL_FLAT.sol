@@ -1239,15 +1239,15 @@ contract NFT is ERC721Enumerable, Ownable {
   string public baseURI;
   string public baseExtension = ".json";
   string public notRevealedUri;
-  uint256 public cost = 2 ether; // Remember to set price
+  uint256 public cost = 2 ether;
   uint256 public maxSupply = 10000;
   uint256 public maxMintAmount = 10000; // How many NFTs can the user mint at a time
   uint256 public nftPerAddressLimit = 10000; // How many NFTs can each address mint during presale
-  bool public paused = true; // Remember to pause
+  bool public paused = true;
   bool public revealed = false;
-  bool public onlyWhitelisted = true;
-  address[] public whitelistedAddresses;
-  mapping(address => uint256) public addressMintedBalance; // For presale only
+  bool public onlyWhitelisted = true; // For presale
+  address[] public whitelistedAddresses; // For presale
+  mapping(address => uint256) public addressMintedBalance; // For presale
 
   constructor(
     string memory _name,
@@ -1275,7 +1275,7 @@ contract NFT is ERC721Enumerable, Ownable {
     // Owner gets to mint for free
     if (msg.sender != owner()) {
 
-        // 
+        // During presale, each address is only allowed to mint a certain number of NFTs
         if(onlyWhitelisted == true) {
             require(isWhitelisted(msg.sender), "user is not whitelisted");
             uint256 ownerMintedCount = addressMintedBalance[msg.sender];
