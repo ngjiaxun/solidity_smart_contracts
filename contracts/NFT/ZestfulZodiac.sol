@@ -1451,7 +1451,11 @@ contract ZestfulZodiac is ERC721Enumerable, Ownable {
 
     // public
     function mint(uint256 _mintAmount) public payable {
-        require(!paused, "the contract is paused");
+
+        // Contract owner can mint even if the contract is paused
+        if (msg.sender != owner()) {
+            require(!paused, "the contract is paused");
+        }
         uint256 supply = totalSupply();
         require(_mintAmount > 0, "need to mint at least 1 NFT");
         require(
