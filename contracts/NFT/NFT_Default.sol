@@ -1402,6 +1402,19 @@ abstract contract Ownable is Context {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
 /*****************************************************************
 
 =========================== START HERE ===========================
@@ -1410,7 +1423,7 @@ abstract contract Ownable is Context {
 
 pragma solidity >=0.7.0 <0.9.0;
 
-contract ZestfulZodiac is ERC721Enumerable, Ownable {
+contract NFT_Default is ERC721Enumerable, Ownable {
     using Strings for uint256;
 
     string public baseURI;
@@ -1418,9 +1431,8 @@ contract ZestfulZodiac is ERC721Enumerable, Ownable {
     string public notRevealedUri;
     uint256 public cost = 2 ether;
     uint256 public maxSupply = 10000;
-    uint256 public maxMintAmount = 1000; // How many NFTs can the user mint at a time
-    uint256 public nftPerAddressLimit = 1000; // How many NFTs can each address mint during presale
-    uint256 public ownerNftAmount = 1000; // How many NFTs the owner immediately gets when they deploy the contract
+    uint256 public maxMintAmount = 24; // How many NFTs can the user mint at a time
+    uint256 public nftPerAddressLimit = 10000; // How many NFTs can each address mint during presale
     uint256 public profitShare = 5; // What percentage of profit gets paid out to profitShareAddress upon withdrawal
     uint256 public revenueShare = 10; // What percentage of revenue gets paid out to revenueShareAddress upon minting
     bool public paused = true;
@@ -1439,9 +1451,6 @@ contract ZestfulZodiac is ERC721Enumerable, Ownable {
     ) ERC721(_name, _symbol) {
         setBaseURI(_initBaseURI);
         setNotRevealedURI(_initNotRevealedUri);
-
-        // Owner gets some NFTs upon deployment
-        mint(ownerNftAmount);
     }
 
     // internal
@@ -1458,10 +1467,15 @@ contract ZestfulZodiac is ERC721Enumerable, Ownable {
         }
         uint256 supply = totalSupply();
         require(_mintAmount > 0, "need to mint at least 1 NFT");
-        require(
-            _mintAmount <= maxMintAmount,
-            "max mint amount per session exceeded"
-        );
+
+        // Contract owner can mint unlimited tokens per session
+        if (msg.sender != owner()) {
+            require(
+                _mintAmount <= maxMintAmount,
+                "max mint amount per session exceeded"
+            );
+        }
+
         require(supply + _mintAmount <= maxSupply, "max NFT limit exceeded");
 
         // Contract owner gets to mint for free
